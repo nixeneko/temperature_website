@@ -1,0 +1,3 @@
+#coding: utf-8
+
+TEMP_LOG_DIR = "/home/pi/temperature/temp_log"

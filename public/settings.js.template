@@ -1,0 +1,2 @@
+const TEMPERATURE_API_URL = './api/get_day_temps';
+
