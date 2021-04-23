@@ -8,7 +8,7 @@ from settings.settings import TEMPERATURE_FILE
 
 temperature = None
 
-tfiles = subprocess.check_output(['cat',temperature_file]).decode('utf-8')
+tfiles = subprocess.check_output(['cat',TEMPERATURE_FILE]).decode('utf-8')
 now = datetime.datetime.now()
 nowstr = now.isoformat().split(".")[0]
 if tfiles.find("YES",30,60) != -1:
