@@ -1,2 +1,2 @@
 const TEMPERATURE_API_URL = './api/get_day_temps';
-
+const CURRENT_TEMP_URL = './api/get_current_temp';
