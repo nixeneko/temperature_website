@@ -36,7 +36,6 @@ function currentTemp() {
   }
 }
 setInterval(currentTemp, 60*1000); //1分毎
-currentTemp();
 class GraphControl {
   constructor(){
     this.ctx = document.getElementById("myChart");
@@ -144,6 +143,8 @@ class GraphControl {
 var graph = new GraphControl();
 let today = moment().startOf('day');
 graph.getTemperatures(today);
+
+currentTemp();
   </script>
 </body>
 </html>
