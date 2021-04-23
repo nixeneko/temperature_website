@@ -1,3 +1,4 @@
 #coding: utf-8
 
 TEMP_LOG_DIR = "/home/pi/record_temperature/temp_log"
+TEMPERATURE_FILE = "/sys/bus/w1/devices/28-????????????/w1_slave"
