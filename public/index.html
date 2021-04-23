@@ -8,11 +8,12 @@
   <style>
 #myChart { 
   width: 100%;
-  height: 90vh;
+  height: 80vh;
 }
   </style>
 </head>
 <body>
+  <h3>現在 <span id="current_temp"></span></h3>
   <div id="chartContainer">
     <canvas id="myChart"></canvas>
   </div>
@@ -23,6 +24,18 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@next"></script>
   <script src="./settings.js"></script><!--  TEMPERATURE_API_URL -->
   <script>
+function currentTemp() {
+  request.open('GET', CURRENT_TEMP_URL);
+  request.responseType = 'json';
+  request.send();
+  request.onload = function() {
+    const response = request.response;
+    const temp = response["temperature"];
+    document.getElementById("current_temp").innerText = temp;
+  }
+}
+setInterval(currentTemp, 60*1000); //1分毎
+currentTemp();
 class GraphControl {
   constructor(){
     this.ctx = document.getElementById("myChart");
