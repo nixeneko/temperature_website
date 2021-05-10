@@ -124,7 +124,7 @@ class GraphControl {
     let monthstr = date.format('YYYY-MM');
     let mydata_min = [];
 	let mydata_max = [];
-    const requestURL = MONTH_TEMP_URL+'?date='+monthstr;
+    const requestURL = MONTH_TEMP_URL+'?month='+monthstr;
     const request = new XMLHttpRequest();
     request.open('GET', requestURL);
     request.responseType = 'json';
@@ -147,8 +147,8 @@ class GraphControl {
   }
 }
 var graph = new GraphControl();
-let today = moment().startOf('day');
-graph.getTemperatures(today);
+let this_month = moment().startOf('month');
+graph.getTemperatures(this_month);
   </script>
 </body>
 </html>
