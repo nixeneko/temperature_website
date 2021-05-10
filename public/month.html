@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>今日の気温</title>
+  <style>
+#myChart { 
+  width: 100%;
+  height: 90vh;
+}
+  </style>
+</head>
+<body>
+  <h3>現在の気温 <span id="current_temp"></span>℃</h3>
+  <div id="chartContainer">
+    <canvas id="myChart"></canvas>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@next"></script>
+  <script src="./settings.js"></script><!--  TEMPERATURE_API_URL -->
+  <script>
+
+class GraphControl {
+  constructor(){
+    this.ctx = document.getElementById("myChart");
+    this.ctx.width = this.ctx.style.width;
+    this.ctx.height = this.ctx.style.height; //これonresize時にやりたいね
+    this.loaded_month = moment().startOf('month');
+    let data = {
+      datasets: [{
+         label: 'Min Temp',
+         //data: mydata,
+         borderColor: 'blue',
+         borderWidth: 1,
+         pointBackgroundColor: '#00f',
+         pointBorderColor: '#00f',
+         pointRadius: 0,
+         pointHoverRadius: 5,
+         fill: false,
+         tension: 0,
+         showLine: true
+      },
+	  {
+         label: 'Max Temp',
+         //data: mydata,
+         borderColor: 'red',
+         borderWidth: 1,
+         pointBackgroundColor: '#f00',
+         pointBorderColor: '#f00',
+         pointRadius: 0,
+         pointHoverRadius: 5,
+         fill: false,
+         tension: 0,
+         showLine: true
+       }]
+    };
+    const config = {
+      type: 'scatter',
+      data: data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+              minUnit: 'day',
+              displayFormats: {
+                day: 'MM/DD'
+              }
+            }
+          },
+          y: {
+            ticks: {
+              callback: function (value){
+                return value + '℃';
+              }
+            }
+          }
+        },
+        plugins: {
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x',
+              speed: 20,
+              threshold: 10,
+              onPanComplete: function({chart}) { 
+                let left_end = moment(chart.config.options.scales.x.min);
+                if (left_end < this.loaded_month){
+                  let last_month = this.loaded_month.subtract(1, 'months');
+                  this.loaded_month = last_month;
+                  this.getTemperatures(this.loaded_month)
+                }
+              }.bind(this)
+              //左端に行ったらロードしたい。onPanCompleteかな。
+              //あとデータセットの最大値と最小値の間でプロットしたい。
+            },
+            zoom: {
+              enabled: true,
+              mode: 'x',
+              speed: 0.1,
+              threshold: 2,
+              sensitivity: 3,
+            }
+          }
+        }
+      }
+    };
+    this.chart = new Chart(this.ctx, config);
+  }
+  addData(data_min, data_max){
+    this.chart.data.datasets[0].data = this.chart.data.datasets[0].data.concat(data_min.reverse());
+	this.chart.data.datasets[1].data = this.chart.data.datasets[1].data.concat(data_max.reverse());
+    this.chart.update();
+  }
+  getTemperatures(date){
+    //TODO: 2重実行を避けるコードを書く
+    let monthstr = date.format('YYYY-MM');
+    let mydata_min = [];
+	let mydata_max = [];
+    const requestURL = MONTH_TEMP_URL+'?date='+monthstr;
+    const request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'json';
+    request.send();
+    request.onload = function() {
+      const response = request.response;
+	  const monthstr = response["month"];
+      const temps = response["temperatures"];
+      /*mydata = temps.map( datum => 
+                 ({x: moment(datum["time"]), y: datum["temperature"]}) );*/
+      for (let datum of temps) {
+        let datestr = datum["date"];
+        let min_temp = datum["min"];
+		let max_temp = datum["max"];
+        mydata_min.push( {x: moment(datestr), y: min_temp} );
+		mydata_max.push( {x: moment(datestr), y: max_temp} );
+      }
+      this.addData(mydata_min, mydata_max);
+    }.bind(this);
+  }
+}
+var graph = new GraphControl();
+let today = moment().startOf('day');
+graph.getTemperatures(today);
+  </script>
+</body>
+</html>
+
