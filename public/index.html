@@ -100,11 +100,15 @@ class GraphControl {
               //あとデータセットの最大値と最小値の間でプロットしたい。
             },
             zoom: {
-              enabled: true,
               mode: 'x',
-              speed: 0.1,
-              threshold: 2,
               sensitivity: 3,
+			  wheel: {
+                enabled: true,
+                speed: 0.1
+			  },
+			  pinch: {
+                enabled: true
+			  }
             }
           }
         }
