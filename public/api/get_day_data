@@ -24,15 +24,15 @@ def get_json():
         result_json['error'] = {"message": "Invalid isoformat string"}
         return result_json
     
-    filepath = os.path.join(TEMP_LOG_DIR, 
+    filepath = os.path.join(DATA_LOG_DIR, 
                             "{:04d}/{}.tsv".format(date.year, datestr))
     if os.path.isfile(filepath):
-        result_json["temperatures"] = []
+        result_json["data"] = []
         with open(filepath, "r") as f:
             for line in f:
                 if not line.strip(): continue #ignore empty line
                 time, temp, hum, pres = line.strip().split("\t")
-                result_json["temperatures"].append(
+                result_json["data"].append(\
                         {"time": time, 
                          "temperature": float(temp),
                          "humidity": float(hum),
