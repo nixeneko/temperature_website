@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+#coding: utf-8
+
+import sys, json, datetime, os
+import cgi
+import cgitb #for debug
+cgitb.enable() #for debug
+
+from settings.settings import DATA_LOG_DIR
+
+def get_json():
+    result_json = {}
+
+    form = cgi.FieldStorage()
+    datestr = datetime.date.today().isoformat()
+    if 'date' in form:
+        datestr = form['date'].value
+    result_json["date"] = datestr
+
+    date = None
+    try:
+        date = datetime.date.fromisoformat(datestr)
+    except ValueError:
+        result_json['error'] = {"message": "Invalid isoformat string"}
+        return result_json
+    
+    filepath = os.path.join(TEMP_LOG_DIR, 
+                            "{:04d}/{}.tsv".format(date.year, datestr))
+    if os.path.isfile(filepath):
+        result_json["temperatures"] = []
+        with open(filepath, "r") as f:
+            for line in f:
+                if not line.strip(): continue #ignore empty line
+                time, temp, hum, pres = line.strip().split("\t")
+                result_json["temperatures"].append(
+                        {"time": time, 
+                         "temperature": float(temp),
+                         "humidity": float(hum),
+                         "pressure": float(pres)})
+    else:
+        result_json['error'] = {"message": "Not found"}
+    return result_json
+
+print("Content-Type: application/json")
+print("")
+print(json.dumps(get_json()))

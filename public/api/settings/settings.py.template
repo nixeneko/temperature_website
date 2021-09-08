@@ -1,4 +1,5 @@
 #coding: utf-8
 
-TEMP_LOG_DIR = "/home/pi/record_temperature/temp_log"
+TEMP_LOG_DIR = "/home/pi/record_temperature/data_log/ds18b20"
 TEMPERATURE_FILE = "/sys/bus/w1/devices/28-????????????/w1_slave"
+DATA_LOG_DIR = "/home/pi/record_temperature/data_log/bme280"
